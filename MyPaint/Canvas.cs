@@ -118,6 +118,11 @@ namespace MyPaint
                 oX = e.X;
                 oY = e.Y;
             }
+            else if (((MainForm)MdiParent).toolStripButtonStar.Checked)
+            {
+                oX = e.X;
+                oY = e.Y;
+            }
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
@@ -140,7 +145,40 @@ namespace MyPaint
                 pencil.StartCap = System.Drawing.Drawing2D.LineCap.Round;
                 pencil.EndCap = System.Drawing.Drawing2D.LineCap.Round;
                 Graphics graphics = Graphics.FromImage(bmp);
-                graphics.DrawEllipse(pencil, new Rectangle(oX, oY, Math.Abs(oX - e.X), Math.Abs(oY - e.Y)));
+                if (!((MainForm)MdiParent).toolStripButtonColor.Checked)
+                    graphics.DrawEllipse(pencil, new Rectangle(oX, oY, Math.Abs(oX - e.X), Math.Abs(oY - e.Y)));
+                else
+                    graphics.FillEllipse(new SolidBrush(MainForm.CurColor), new Rectangle(oX, oY, Math.Abs(oX - e.X), Math.Abs(oY - e.Y)));
+                pictureBox1.Invalidate();
+            }
+            else if (((MainForm)MdiParent).toolStripButtonStar.Checked)
+            {
+                Pen pencil = new Pen(MainForm.CurColor, MainForm.CurWidth);
+                pencil.DashCap = System.Drawing.Drawing2D.DashCap.Round;
+                pencil.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                pencil.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+                Graphics graphics = Graphics.FromImage(bmp);
+                int n = 7;
+                double R = 15;
+
+                PointF[] points = new PointF[2 * n + 1];
+                double a = 60, da = Math.PI / n, l;
+
+                for (int k = 0; k < 2 * n + 1; k++)
+                {
+                    double i = double.Parse(e.X.ToString());
+                    double j = double.Parse(e.Y.ToString());
+                    double r = 2 * R;
+                    l = k % 2 == 0 ? r : R;
+                    points[k] = new PointF((float)(e.X + l * Math.Cos(a)), (float)(e.Y + l * Math.Sin(a)));
+                    a += da;
+                    graphics.DrawLines(pencil, points);
+                }
+
+                if (!((MainForm)MdiParent).toolStripButtonColor.Checked)
+                    graphics.DrawEllipse(pencil, new Rectangle(oX, oY, Math.Abs(oX - e.X), Math.Abs(oY - e.Y)));
+                else
+                    graphics.FillEllipse(new SolidBrush(MainForm.CurColor), new Rectangle(oX, oY, Math.Abs(oX - e.X), Math.Abs(oY - e.Y)));
                 pictureBox1.Invalidate();
             }
         }
